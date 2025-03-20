@@ -1,0 +1,29 @@
+1 2 3
+Popescu Darius 334CCb
+# Simulator de Switch-uri de Rețea
+
+Acest proiect implementează un simulator de bază pentru switch-uri de rețea folosind Python. Simulatorul gestionează cadrele Ethernet, procesează unitățile de date ale protocoalelor de punte (BPDU) pentru Spanning Tree Protocol (STP) și se ocupă de etichetarea VLAN. Scopul său este să emuleze comportamentul unui switch de rețea într-un mediu controlat, facilitând învățarea despre rețelistică și funcționarea switch-urilor.
+
+## Funcționalități
+
+- **Procesarea Cadrelor Ethernet**: Simulatorul poate analiza cadrele Ethernet și le poate redirecționa în funcție de adresele MAC.
+- **Suport pentru VLAN**: Gestionarea etichetării VLAN și tratarea cadrelor în consecință, diferențiind între porturi trunk și porturi de acces.
+- **Protocolul Spanning Tree (STP)**: Implementarea transmiterii BPDUs pentru a preveni buclele în rețea și a electa un root bridge.
+- **Învățarea Dinamică a Adreselor MAC**: Învățarea adreselor MAC în mod dinamic și actualizarea tabelei de forwarding.
+- **Controlul Flooding-ului**: Prevenirea flooding-ului cadrelor unicast necunoscute după o limită specificată.
+
+## Implementare
+
+### Forwarding-ul Cadrelor
+
+Forwarding-ul cadrelor se realizează printr-o funcție dedicată numită `forward_frame()`, care primește parametrii necesari, inclusiv interfața țintă, VLAN-ul, configurația portului, datele cadrului și lungimea acestuia. Funcția verifică starea portului țintă (dacă este BLOCKING) și gestionează etichetarea VLAN pentru cadrele care trebuie să fie transmise.
+
+- **Verificarea VLAN-ului**: Dacă interfața țintă este configurată ca trunk, cadrul este etichetat cu VLAN-ul corespunzător, altfel, cadrul este transmis fără etichetare.
+- **Starea Porturilor**: Dacă portul țintă este în stare BLOCKING, cadrul este abandonat, iar un mesaj corespunzător este afișat.
+
+### Tabela MAC
+
+Învățarea dinamică a adreselor MAC se face printr-un dicționar numit `MAC_Table`, care păstrează asocierea între adresele MAC sursă și interfețele de intrare. Când un cadru este primit, adresa MAC sursă este adăugată în `MAC_Table`:
+
+```python
+MAC_Table[src_mac_str] = interface
